@@ -8,6 +8,9 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
 
+const { auth } = require('express-openid-connect');
+const db = require("./db/db");
+
 var app = express();
 
 // view engine setup
@@ -20,18 +23,35 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const { auth } = require('express-openid-connect');
+require('dotenv').config()
 
-const config = {
+const authConfig = {
   authRequired: false,
   auth0Logout: true,
-  secret: 'a long, randomly-generated string stored in env',
-  baseURL: 'http://localhost:3000',
-  clientID: 'weEjDjy0gcTRmBvII3XDcpn6LB2snxXU',
-  issuerBaseURL: 'https://dev-gm9sesne.us.auth0.com'
+  secret: process.env.AUTH_SECRET,
+  baseURL: process.env.AUTH_BASEURL,
+  clientID: process.env.AUTH_CLIENTID,
+  issuerBaseURL: process.env.AUTH_ISSUERBASEURL
 };
 
-app.use(auth(config));
+app.use(auth(authConfig));
+
+app.use( async (req, res, next) => {
+  res.locals.isAuthenticated = req.oidc.isAuthenticated();
+  if (res.locals.isAuthenticated){
+    //check if admin
+    let results = await db.queryPromise("SELECT admin FROM user WHERE email = ?", [req.oidc.user.email])
+    if (results.length > 0) {
+      res.locals.isAdmin = (results[0].admin == 1)
+    } else {
+      //if no account yet, set up user row in database (account information)
+      //For now, we'll just make a quick "account" with just the email info
+      await db.queryPromise("INSERT INTO user (email) VALUES (?)", [req.oidc.user.email]);
+      res.locals.isAdmin = false;
+    }
+  }
+  next();
+})
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
