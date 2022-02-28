@@ -1,0 +1,2 @@
+SELECT project_type_id, event_type
+FROM project_type
