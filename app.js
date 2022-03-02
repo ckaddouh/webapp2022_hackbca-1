@@ -7,7 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
-var projectsRouter=  require('./routes/projects');
+var projectsRouter = require('./routes/projects');
 
 const { auth } = require('express-openid-connect');
 const db = require("./db/db");
@@ -35,24 +35,24 @@ const authConfig = {
   issuerBaseURL: process.env.AUTH_ISSUERBASEURL
 };
 
-//app.use(auth(authConfig));
+app.use(auth(authConfig));
 
-// app.use( async (req, res, next) => {
-//   res.locals.isAuthenticated = req.oidc.isAuthenticated();
-//   if (res.locals.isAuthenticated){
-//     //check if admin
-//     let results = await db.queryPromise("SELECT admin FROM user WHERE email = ?", [req.oidc.user.email])
-//     if (results.length > 0) {
-//       res.locals.isAdmin = (results[0].admin == 1)
-//     } else {
-//       //if no account yet, set up user row in database (account information)
-//       //For now, we'll just make a quick "account" with just the email info
-//       await db.queryPromise("INSERT INTO user (email) VALUES (?)", [req.oidc.user.email]);
-//       res.locals.isAdmin = false;
-//     }
-//   }
-//   next();
-// })
+app.use( async (req, res, next) => {
+  res.locals.isAuthenticated = req.oidc.isAuthenticated();
+  if (res.locals.isAuthenticated){
+    //check if admin
+    let results = await db.queryPromise("SELECT admin FROM user WHERE email = ?", [req.oidc.user.email])
+    if (results.length > 0) {
+      res.locals.isAdmin = (results[0].admin == 1)
+    } else {
+      //if no account yet, set up user row in database (account information)
+      //For now, we'll just make a quick "account" with just the email info
+      await db.queryPromise("INSERT INTO user (email) VALUES (?)", [req.oidc.user.email]);
+      res.locals.isAdmin = false;
+    }
+  }
+  next();
+})
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

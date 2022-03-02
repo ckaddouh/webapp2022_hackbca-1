@@ -1,2 +1,2 @@
-SELECT project_type_id, event_type
+SELECT project_type.project_type_id, project_type.name
 FROM project_type

@@ -1,20 +1,18 @@
 SELECT 
-	project.project_id as project_id, 
-    project_name, 
-    project_duration,
-    event_type,
-    DATE_FORMAT(project_date_proposed, '%Y-%m-%d') as project_date_proposed,
-    project_team_id,
-    project_description,
-    event_interest,
-    likes_id
+	project.project_id, 
+    project.project_name,
+    project.project_team_id,
+    project.project_type_id,
+    DATE_FORMAT(date_proposed, '%Y-%m-%d') as date_proposed,
+    project.project_description,
+    project_likes
 FROM 
-	event LEFT JOIN (
-		SELECT COUNT(*) as likes_id, project_id 
+	project LEFT JOIN (
+		SELECT COUNT(*) as project_likes, project.project_id 
         FROM likes
-		GROUP BY project_id
-	) as likes ON project.project_id = likes.project_id,
-    project_team_id, project_type
+		GROUP BY likes.project_id
+	) as project_like_counts ON project.project_id = project_like_counts.project_id,
+    project.project_team_id, project.project_type_id
 WHERE
-    
+    project.project_team_id = team.team_id
     and project.project_type_id = project_type.project_type_id

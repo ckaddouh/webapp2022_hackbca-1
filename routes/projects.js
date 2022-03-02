@@ -14,19 +14,19 @@ function requireAdmin(req, res, next){
     // next("AGHHH NOT ALLOWED");
 }
 
-let eventsQuery = fs.readFileSync(path.join(__dirname, "../db/select_projects.sql"), "utf-8");
+let projectsQuery = fs.readFileSync(path.join(__dirname, "../db/select_projects.sql"), "utf-8");
 
 /* GET events "home" page - a list of all events. */
 router.get('/', async function(req, res, next) {
-  // let promise = db.queryPromise(eventsQuery)
+  // let promise = db.queryPromise(projectsQuery)
   // promise.then((results) => {
-  //   res.render('events', { title: 'Events', style: "tables", events: results});
+  //   res.render('events', { title: 'Projects', style: "tables", projects: results});
   // }).catch((err) => {
   //   next(err);
   // });
 
   try {
-    let results = await db.queryPromise(eventsQuery)
+    let results = await db.queryPromise(projectsQuery)
     console.log(results);
     res.render('projects', { title: 'Projects', style: "tables", events: results});
   } catch (err) {
@@ -36,19 +36,19 @@ router.get('/', async function(req, res, next) {
 
 });
 
-let event_locations_query = fs.readFileSync(path.join(__dirname, "../db/select_event_locations.sql"), "utf-8");
-let event_types_query = fs.readFileSync(path.join(__dirname, "../db/select_event_types.sql"), "utf-8");
+let project_teams_query = fs.readFileSync(path.join(__dirname, "../db/select_project_teams.sql"), "utf-8");
+let project_types_query = fs.readFileSync(path.join(__dirname, "../db/select_project_types.sql"), "utf-8");
 
 
 router.get('/create', requireAdmin ,async function(req, res, next) {
   try {
 
-    let event_locations = await db.queryPromise(event_locations_query);
-    let event_types = await db.queryPromise(event_types_query);
+    let project_teams = await db.queryPromise(project_teams_query);
+    let event_types = await db.queryPromise(project_types_query);
   
     res.render('projectform', {title: "Create Project", style: "newevent", 
-                            event_locations:event_locations, 
-                          event_types:event_types})
+                            project_teams:project_teams, 
+                          project_types:project_types})
   } catch(err) {
     next(err);
   }
@@ -57,7 +57,7 @@ router.get('/create', requireAdmin ,async function(req, res, next) {
 let singleEventQuery = fs.readFileSync(path.join(__dirname, "../db/select_project_single.sql"), "utf-8");
 
 router.get('/:project_id', function(req, res, next) {
-  let project_id = req.params.event_id
+  let project_id = req.params.project_id
   // GET FROM DATABASE: Select query where event_id = event_id from URL
   //For now, lets pretend
   // let event_data = {event_id: event_id,
@@ -69,11 +69,11 @@ router.get('/:project_id', function(req, res, next) {
   //                 event_type: "Main",
   //                 event_interest: "100",
   //                 event_description: "Be there!"}
-  db.query(singleEventQuery, [event_id], (err, results) => {
+  db.query(singleEventQuery, [project_id], (err, results) => {
     if (err)
       next(err);
     console.log(results);
-    let event_data = results[0];
+    let project_data = results[0];
     res.render('project', { title: 'Project Details', 
                       styles: ["tables", "event"], 
                       project_id : project_id, 
@@ -87,64 +87,62 @@ let singleEventForFormQuery = fs.readFileSync(path.join(__dirname, "../db/select
 router.get('/:project_id/modify', requireAdmin , async function(req, res, next) {
   try {
 
-    let event_locations = await db.queryPromise(event_locations_query);
-    let event_types = await db.queryPromise(event_types_query);
+    let project_teams = await db.queryPromise(project_teams_query);
+    let project_types = await db.queryPromise(project_types_query);
     //Very much like the get('/:event_id') route... 
     let project_id = req.params.event_id
     let results = await db.queryPromise( singleProjectForFormQuery, [project_id]);
     let project_data = results[0];
 
     res.render('projectform', {title: "Modify Project", style: "newevent", 
-                            event_locations:event_locations, 
-                          event_types:event_types,
-                        event: event_data}); // provide current event data
+                            project_teams:project_teams, 
+                          project_types:project_types,
+                        project: project_data}); // provide current project data
   } catch(err) {
     next(err);
   }
 
 });
 
-let insertEventQuery = fs.readFileSync(path.join(__dirname, "../db/insert_project.sql"), "utf-8");
+let insertProjectQuery = fs.readFileSync(path.join(__dirname, "../db/insert_project.sql"), "utf-8");
 // (`event_name`, `event_location_id`, `event_type_id`, `event_dt`, `event_duration`, `event_description`) 
-router.post('/', requireAdmin ,async function(req, res, next) {
+router.post('/', async function(req, res, next) { //requireAdmin
   try {
-    let results = await db.queryPromise(insertEventQuery, [req.body.event_name, 
-      req.body.event_location_id, 
-      req.body.event_type_id, 
-      `${req.body.event_date} ${req.body.event_time}`,
-      req.body.event_duration,
-      req.body.event_description
+    let results = await db.queryPromise(insertProjectQuery, [req.body.project_name, 
+      req.body.project_type_id, 
+      req.body.project_team_id, 
+      req.body.date_proposed,
+      req.body.project_description,
     ]);
 
   let project_id_inserted = results.insertId;
-  res.redirect(`/projects/${event_id_inserted}`);
+  res.redirect(`/projects/${project_id_inserted}`);
   } catch(err) {
     next(err);
   }
 })
 
-let updateEventQuery = fs.readFileSync(path.join(__dirname, "../db/update_project.sql"), "utf-8"); 
+let updateProjectQuery = fs.readFileSync(path.join(__dirname, "../db/update_project.sql"), "utf-8"); 
 router.post('/:project_id', requireAdmin ,async function(req, res, next) {
   try {
-    let results = await db.queryPromise(updateEventQuery, [req.body.event_name, 
-      req.body.event_location_id, 
-      req.body.event_type_id, 
-      `${req.body.event_date} ${req.body.event_time}`,
-      req.body.event_duration,
-      req.body.event_description,
-      req.params.event_id // or req.body.event_id, since its a hidden input in the form
+    let results = await db.queryPromise(updateProjectQuery, [req.body.project_name, 
+      req.body.project_type_id, 
+      req.body.project_team_id, 
+      req.body.date_proposed,
+      req.body.project_description,
+      req.params.project_id // or req.body.event_id, since its a hidden input in the form
     ]);
 
-  res.redirect(`/projects/${req.params.event_id}`);
+  res.redirect(`/projects/${req.params.project_id}`);
   } catch(err) {
     next(err);
   }
 })
 
-let deleteEventQuery = "DELETE FROM event WHERE project_id = ?";
+let deleteEventQuery = "DELETE FROM project WHERE project_id = ?";
 router.get('/:projects_id/delete', requireAdmin, async (req, res, next) => {
   try {
-    await db.queryPromise(deleteEventQuery, req.params.project_id);
+    await db.queryPromise(deleteProjectQuery, req.params.project_id);
     res.redirect('/projects')
   } catch (err) {
     next(err);
