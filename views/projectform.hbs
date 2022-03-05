@@ -31,17 +31,19 @@
                 </select>
                 <label for="project_type">Project Type</label>
               </div>
-
-              {{!-- <div class="input-field col s6">
-                <select id="project_location" name="project_location_id" required>
-                  <option value="" disabled selected>Select a location</option>
-                  {{#each project_locations}}
-                      <option value="{{project_location_id}}">{{project_location}}</option>
+            </div>
+             
+            <div class="row">
+              <div class="input-field col s6">
+                <select id="project_team" name="project_team_id" required>
+                  <option value="" disabled selected>Select a team name</option>
+                  {{#each project_teams}}
+                      <option value="{{team_id}}">{{team_name}}</option>
                   {{/each}}
                 </select>
-                <label for="event_location">Location</label>
+                <label for="project_team">Project Team</label>
               </div>
-            </div> --}}
+            </div>
 
             <div class="row">
               <div class="input-field col s4">
@@ -52,7 +54,7 @@
 
             <div class="row">
               <div class="input-field col s12">
-                <textarea id="project_description" name="project_description" class="materialize-textarea" data-length="500"></textarea>
+                <textarea id="description" name="description" class="materialize-textarea" data-length="500"></textarea>
                 <label for="description">Description</label>
               </div>
             </div>
@@ -83,11 +85,11 @@
     {{#with project}} 
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("project_name").value = "{{project_name}}";
-        document.getElementById("project_type").value = "{{project_type}}";
-        document.getElementById("project_team").value = "{{project_team}}";
+        document.getElementById("project_type").value = "{{project_type_id}}"";
+        document.getElementById("project_team").value = "{{project_team_id}}";
         document.getElementById("date_proposed").value = "{{date_proposed}}";
         {{!-- Use triple mustaches to NOT escape characters --}}
-        document.getElementById("description").value = "{{{description}}}";
+        document.getElementById("description").value = "{{description}}";
 
         
         var elems = document.querySelectorAll('select');

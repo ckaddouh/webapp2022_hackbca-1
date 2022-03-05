@@ -10,7 +10,7 @@ FROM
 	project LEFT JOIN (
 		SELECT COUNT(*) as project_likes, project_id 
         FROM likes
-		GROUP BY likes.project_id
+		GROUP BY project_id -- likes.project_id
 	) as project_like_counts ON project.project_id = project_like_counts.project_id,
     team, project_type
 WHERE

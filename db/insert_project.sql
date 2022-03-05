@@ -1,5 +1,5 @@
 INSERT INTO project
-        (`project_name`, `project_team_id`, `project_type_id`, `date_proposed`, `description`) 
+        (`project_name`, `project_type_id`, `project_team_id`, `date_proposed`, `description`) 
 VALUES 
         (?, 
         ?,  
