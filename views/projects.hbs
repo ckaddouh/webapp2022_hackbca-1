@@ -40,7 +40,6 @@
             <th>Type
               <a href="?sort=datetime"><i class="material-icons">sort</i></a>
             </th>
-            <th>Description</th>
             <th>Date Proposed
               <a href="?sort=type"><i class="material-icons">sort</i></a>
               <i class="material-icons">filter_list</i>
@@ -70,10 +69,10 @@
             </td>
             {{/if}}
             <td class="blue-text clickable" onclick="location.href='/projects/{{project_id}}'">{{project_name}}</td>
-            <td> <a href='?filter=location:{{project_id}}'>{{project_team_id}} </a></td>
-            <td><a href='?filter=date:{{date_proposed}}'>{{date_proposed}}</a></td>
-            <td> <a href='?filter=type:{{project_type}}'>{{project_type}}</a></td>
-            <td>{{likes}}<i class=material-icons>people</i></td>
+            <td> <a href='?filter=location:{{project_team}}'>{{team_name}}</a></td>
+            <td>{{name}}</a></td>
+            <td>{{date_proposed}}</a></td>
+            <td>{{project_likes}}<i class=material-icons>people</i></td>
             <!-- ADMIN ONLY BUTTONS -->
             {{#if @root.isAdmin}}
 

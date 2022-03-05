@@ -8,7 +8,7 @@ const { redirect } = require('express/lib/response');
 
 function requireAdmin(req, res, next){
   if(res.locals.isAdmin)
-    next();
+      next();
   else
     res.redirect("/");
     // next("AGHHH NOT ALLOWED");
@@ -28,7 +28,7 @@ router.get('/', async function(req, res, next) {
   try {
     let results = await db.queryPromise(projectsQuery)
     console.log(results);
-    res.render('projects', { title: 'Projects', style: "tables", events: results});
+    res.render('projects', { title: 'Projects', style: "tables", projects: results});
   } catch (err) {
     next(err);
   }
@@ -40,12 +40,11 @@ let project_teams_query = fs.readFileSync(path.join(__dirname, "../db/select_pro
 let project_types_query = fs.readFileSync(path.join(__dirname, "../db/select_project_types.sql"), "utf-8");
 
 
-router.get('/create', requireAdmin ,async function(req, res, next) {
+router.get('/create', requireAdmin, async function(req, res, next) {
   try {
 
     let project_teams = await db.queryPromise(project_teams_query);
-    let event_types = await db.queryPromise(project_types_query);
-  
+    let project_types = await db.queryPromise(project_types_query);
     res.render('projectform', {title: "Create Project", style: "newevent", 
                             project_teams:project_teams, 
                           project_types:project_types})
@@ -54,7 +53,7 @@ router.get('/create', requireAdmin ,async function(req, res, next) {
   }
 })
 
-let singleEventQuery = fs.readFileSync(path.join(__dirname, "../db/select_project_single.sql"), "utf-8");
+let singleProjectQuery = fs.readFileSync(path.join(__dirname, "../db/select_project_single.sql"), "utf-8");
 
 router.get('/:project_id', function(req, res, next) {
   let project_id = req.params.project_id
@@ -69,11 +68,11 @@ router.get('/:project_id', function(req, res, next) {
   //                 event_type: "Main",
   //                 event_interest: "100",
   //                 event_description: "Be there!"}
-  db.query(singleEventQuery, [project_id], (err, results) => {
+  db.query(singleProjectQuery, [project_id], (err, results) => {
     if (err)
       next(err);
     console.log(results);
-    let project_data = results[0];
+    let project_data = results[0]; 
     res.render('project', { title: 'Project Details', 
                       styles: ["tables", "event"], 
                       project_id : project_id, 
@@ -82,15 +81,14 @@ router.get('/:project_id', function(req, res, next) {
 });
 
 
-let singleEventForFormQuery = fs.readFileSync(path.join(__dirname, "../db/select_project_single_form.sql"), "utf-8");
+let singleProjectForFormQuery = fs.readFileSync(path.join(__dirname, "../db/select_project_single_form.sql"), "utf-8");
 
 router.get('/:project_id/modify', requireAdmin , async function(req, res, next) {
   try {
 
     let project_teams = await db.queryPromise(project_teams_query);
     let project_types = await db.queryPromise(project_types_query);
-    //Very much like the get('/:event_id') route... 
-    let project_id = req.params.event_id
+    let project_id = req.params.project_id
     let results = await db.queryPromise( singleProjectForFormQuery, [project_id]);
     let project_data = results[0];
 
@@ -112,7 +110,7 @@ router.post('/', async function(req, res, next) { //requireAdmin
       req.body.project_type_id, 
       req.body.project_team_id, 
       req.body.date_proposed,
-      req.body.project_description,
+      req.body.description,
     ]);
 
   let project_id_inserted = results.insertId;
@@ -129,7 +127,7 @@ router.post('/:project_id', requireAdmin ,async function(req, res, next) {
       req.body.project_type_id, 
       req.body.project_team_id, 
       req.body.date_proposed,
-      req.body.project_description,
+      req.body.description,
       req.params.project_id // or req.body.event_id, since its a hidden input in the form
     ]);
 
@@ -139,7 +137,7 @@ router.post('/:project_id', requireAdmin ,async function(req, res, next) {
   }
 })
 
-let deleteEventQuery = "DELETE FROM project WHERE project_id = ?";
+let deleteProjectQuery = "DELETE FROM project WHERE project_id = ?";
 router.get('/:projects_id/delete', requireAdmin, async (req, res, next) => {
   try {
     await db.queryPromise(deleteProjectQuery, req.params.project_id);

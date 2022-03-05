@@ -10,7 +10,7 @@
                         <span class="card-title"><h1>{{project_data.project_name}}</h1></span>
                       <!-- USER ONLY - Initialize page with appropriate state of button -->
                       <a onclick='toggleInterest(this, "{{ project_id }}")' class="btn-floating btn-large halfway-fab waves-effect waves-light scale-transition scale-in blue"><i class="material-icons">star_border</i></a>
-                      <!-- <a onclick='toggleInterest(this, "{{ event_id }}"))'class="btn-floating btn-large halfway-fab waves-effect waves-light scale-transition scale-in yellow"><iclass="material-icons">star</i></a> -->
+                      <!-- <a onclick='toggleInterest(this, "{{ project_id }}"))'class="btn-floating btn-large halfway-fab waves-effect waves-light scale-transition scale-in yellow"><iclass="material-icons">star</i></a> -->
                         
                     </div>
                     <div class="card-content">
@@ -18,10 +18,9 @@
                         <table class="centered responsive-table">
                             <thead>
                                 <tr>
-                                <th>Type </th>
                                 <th>Team </th>
+                                <th>Type </th>
                                 <th>Date</th>
-                                <th> </th>
                                 <th>Likes </th>
                                 <!-- ADMIN ONLY BUTTONS -->
                                 <th>Admin Op</th>
@@ -31,8 +30,8 @@
                             <tbody>
                                 <tr>
                                 {{#with project_data}}
-                                <td>{{project_type}}</td>
-                                <td>{{project_team}}</td>
+                                <td>{{team_name}}</td>
+                                <td>{{name}}</td>
                                 <td>{{date_proposed}}</td>
                                 <td>{{project_likes}}<i class=material-icons>people</i></td>
                                 <!-- ADMIN ONLY BUTTONS -->
@@ -40,14 +39,14 @@
                                 <td nowrap>
                                   
                                     <!-- Alternatively to going to a new page, trigger a modal ??-->
-                                    <a class="btn-floating waves-effect waves-light green lighten-1" href="/events/{{project_id}}/modify"><i class="material-icons">edit</i></a>
-                                    <a class="btn-floating waves-effect waves-light red" onclick='confirmDelete("Opening Ceremony","{{ project_id}}", "/events")'><i class="material-icons">delete</i></a>
+                                    <a class="btn-floating waves-effect waves-light green lighten-1" href="/projects/{{project_id}}/modify"><i class="material-icons">edit</i></a>
+                                    <a class="btn-floating waves-effect waves-light red" onclick='confirmDelete("Opening Ceremony","{{ project_id}}", "/projects")'><i class="material-icons">delete</i></a>
         
                                 </td>
-
+                                </tr>
                             </tbody>
                         </table>
-                        <div class="container event-description">{{project_description}}</div>
+                        <div class="container event-description">{{description}}</div>
                         
                         {{/with}}
                         

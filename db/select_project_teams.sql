@@ -1,2 +1,2 @@
-SELECT team.team_id, team.member_id
+SELECT team.team_id, team.team_name
 from team

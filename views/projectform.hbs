@@ -26,7 +26,7 @@
                 <select id="project_type" name="project_type_id" required>
                   <option value="" disabled selected>Select a type</option>
                   {{#each project_types}}
-                      <option value="{{project_type_id}}">{{project_type}}</option>
+                      <option value="{{project_type_id}}">{{name}}</option>
                   {{/each}}
                 </select>
                 <label for="project_type">Project Type</label>
@@ -48,14 +48,12 @@
                 <input type="text" id=project_date name="date_proposed" class="datepicker no-autoinit" required>
                 <label for="date_proposed">Date</label>
               </div>
-
-
             </div>
 
             <div class="row">
               <div class="input-field col s12">
                 <textarea id="project_description" name="project_description" class="materialize-textarea" data-length="500"></textarea>
-                <label for="project_description">Description</label>
+                <label for="description">Description</label>
               </div>
             </div>
 
@@ -78,14 +76,6 @@
       });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-      var elems = document.querySelectorAll('.timepicker');
-      var instances = M.Timepicker.init(elems, {
-        defaultTime: 'now', // Set default time: 'now', '1:30AM', '16:30'
-        twelveHour: true, // Use AM/PM or 24-hour format
-        autoClose: false, // automatic close timepicker
-      });
-    });
 
     //TODO Form Validation
 
@@ -95,9 +85,9 @@
         document.getElementById("project_name").value = "{{project_name}}";
         document.getElementById("project_type").value = "{{project_type}}";
         document.getElementById("project_team").value = "{{project_team}}";
-        document.getElementById("project_date").value = "{{date_proposed}}";
+        document.getElementById("date_proposed").value = "{{date_proposed}}";
         {{!-- Use triple mustaches to NOT escape characters --}}
-        document.getElementById("project_description").value = "{{{description}}}";
+        document.getElementById("description").value = "{{{description}}}";
 
         
         var elems = document.querySelectorAll('select');
